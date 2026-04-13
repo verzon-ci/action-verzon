@@ -1,4 +1,4 @@
-name: "verzon"
+name: "run-verzon"
 description: "The only release tool you’ll ever need. Built in Rust for speed and reliability."
 author: "Simon Kovtyk"
 runs:
