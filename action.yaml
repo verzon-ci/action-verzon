@@ -24,8 +24,6 @@ runs:
         mv verzon-bin ~/.local/bin/verzon
         echo "~/.local/bin" >> "$GITHUB_PATH"
 
-    - uses: actions/checkout@v6
-
     - shell: bash
       run: |
         verzon --help
