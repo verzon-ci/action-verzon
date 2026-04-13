@@ -7,7 +7,7 @@ runs:
     - shell: bash
       id: checksum
       run: |
-        curl -L -o verzon-sha256 https://github.com/verzon-ci/verzon/releases/download/latest/verzon-x86_64-unknown-linux-gnu.sha256
+        curl -L -o verzon-sha256 https://github.com/verzon-ci/verzon/releases/latest/download/verzon-x86_64-unknown-linux-gnu.sha256
         echo "verzon-sha256=$(cat verzon-sha256)" >> $GITHUB_OUTPUT"
 
     - uses: actions/cache@v5
@@ -19,7 +19,7 @@ runs:
     - shell: bash
       if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       run: |
-        curl -L -o verzon-bin https://github.com/verzon-ci/verzon/releases/download/latest/verzon-x86_64-unknown-linux-gnu
+        curl -L -o verzon-bin https://github.com/verzon-ci/verzon/releases/latest/download/verzon-x86_64-unknown-linux-gnu
         mv verzon-bin ~/.local/bin/verzon
         echo "~/.local/bin" >> "$GITHUB_PATH"
 
