@@ -1,6 +1,89 @@
 name: "run-verzon"
 description: "The only release tool you’ll ever need. Built in Rust for speed and reliability."
 author: "Simon Kovtyk"
+inputs:
+  config:
+    description: Path to configuration file
+  config-dir:
+    description: Dir of configuration file
+  cwd:
+    description: Path to run onto
+  graceful:
+    description: Exit gracefully
+  colored:
+    description: Colored output
+  convention:
+    description: Convention to use
+  references:
+    description: References to other configs
+  enabled:
+    description: Exits on false without doing something
+  log-level:
+    description: Log level for outputs
+  tracking-enabled:
+    description: Track all dynamic files
+  tracking-origins:
+    description: Origins for tracking
+  tracking-message:
+    description: Custom message used while tracking
+  semver:
+    description: Force SemVer (e.g. 1.2.0)
+  semver-format:
+    description: Format SemVer (e.g. "v{}")
+  semver-major:
+    description: Force SemVer Major
+  semver-minor:
+    description: Force SemVer Minor
+  semver-patch:
+    description: Force SemVer Patch
+  semver-pre-release:
+    description: Force SemVer Pre-Release (e.g. alpha, beta)
+  semver-iteration:
+    description: Force SemVer Iteration
+  semver-metadata:
+    description: Force SemVer Metadata
+  webhook-custom-origin:
+    description: Create a Webhook with origin
+  webhook-custom-enabled:
+    description: Create a Webhook with enablement
+  webhook-custom-url:
+    description: Create a Webhook with url
+  webhook-custom-token:
+    description: Create a Webhook with token
+  webhook-custom-token-env:
+    description: Create a Webhook with token env
+  webhook-custom-http-retries:
+    description: Create a Webhook with HTTP retries
+  webhook-custom-http-timeout:
+    description: Create a Webhook with HTTP retries
+  webhook-gitlab-origin:
+    description: Create a Webhook with origin
+  webhook-gitlab-enabled:
+    description: Create a Webhook with enablement
+  webhook-gitlab-url:
+    description: Create a Webhook with url
+  webhook-gitlab-token:
+    description: Create a Webhook with token
+  webhook-gitlab-token-env:
+    description: Create a Webhook with token env
+  webhook-gitlab-http-retries:
+    description: Create a Webhook with HTTP retries
+  webhook-gitlab-http-timeout:
+    description: Create a Webhook with HTTP retries
+  webhook-github-origin:
+    description: Create a Webhook with enablement
+  webhook-github-enabled:
+    description: Create a Webhook with enablement
+  webhook-github-url:
+    description: Create a Webhook with url
+  webhook-github-token:
+    description: Create a Webhook with token
+  webhook-github-token-env:
+    description: Create a Webhook with token env
+  webhook-github-http-retries:
+    description: Create a Webhook with HTTP retries
+  webhook-github-http-timeout:
+    description: Create a Webhook with HTTP retries
 runs:
   using: "composite"
   steps:
@@ -26,5 +109,64 @@ runs:
         echo "~/.local/bin" >> "$GITHUB_PATH"
 
     - shell: bash
+      id: args
       run: |
-        verzon --help
+        declare -A INPUTS=(
+          ["config"]="${{ inputs.config }}"
+          ["config-dir"]="${{ inputs.config-dir }}"
+          ["cwd"]="${{ inputs.cwd }}"
+          ["graceful"]="${{ inputs.graceful }}"
+          ["colored"]="${{ inputs.colored }}"
+          ["convention"]="${{ inputs.convention }}"
+          ["references"]="${{ inputs.references }}"
+          ["enabled"]="${{ inputs.enabled }}"
+          ["log-level"]="${{ inputs.log-level }}"
+          ["tracking-enabled"]="${{ inputs.tracking-enabled }}"
+          ["tracking-origins"]="${{ inputs.tracking-origins }}"
+          ["tracking-message"]="${{ inputs.tracking-message }}"
+          ["semver"]="${{ inputs.semver }}"
+          ["semver-format"]="${{ inputs.semver-format }}"
+          ["semver-major"]="${{ inputs.semver-major }}"
+          ["semver-minor"]="${{ inputs.semver-minor }}"
+          ["semver-patch"]="${{ inputs.semver-patch }}"
+          ["semver-pre-release"]="${{ inputs.semver-pre-release }}"
+          ["semver-iteration"]="${{ inputs.semver-iteration }}"
+          ["semver-metadata"]="${{ inputs.semver-metadata }}"
+          ["webhook-custom-origin"]="${{ inputs.webhook-custom-origin }}"
+          ["webhook-custom-enabled"]="${{ inputs.webhook-custom-enabled }}"
+          ["webhook-custom-url"]="${{ inputs.webhook-custom-url }}"
+          ["webhook-custom-token"]="${{ inputs.webhook-custom-token }}"
+          ["webhook-custom-token-env"]="${{ inputs.webhook-custom-token-env }}"
+          ["webhook-custom-http-retries"]="${{ inputs.webhook-custom-http-retries }}"
+          ["webhook-custom-http-timeout"]="${{ inputs.webhook-custom-http-timeout }}"
+          ["webhook-gitlab-origin"]="${{ inputs.webhook-gitlab-origin }}"
+          ["webhook-gitlab-enabled"]="${{ inputs.webhook-gitlab-enabled }}"
+          ["webhook-gitlab-url"]="${{ inputs.webhook-gitlab-url }}"
+          ["webhook-gitlab-token"]="${{ inputs.webhook-gitlab-token }}"
+          ["webhook-gitlab-token-env"]="${{ inputs.webhook-gitlab-token-env }}"
+          ["webhook-gitlab-http-retries"]="${{ inputs.webhook-gitlab-http-retries }}"
+          ["webhook-gitlab-http-timeout"]="${{ inputs.webhook-gitlab-http-timeout }}"
+          ["webhook-github-origin"]="${{ inputs.webhook-github-origin }}"
+          ["webhook-github-enabled"]="${{ inputs.webhook-github-enabled }}"
+          ["webhook-github-url"]="${{ inputs.webhook-github-url }}"
+          ["webhook-github-token"]="${{ inputs.webhook-github-token }}"
+          ["webhook-github-token-env"]="${{ inputs.webhook-github-token-env }}"
+          ["webhook-github-http-retries"]="${{ inputs.webhook-github-http-retries }}"
+          ["webhook-github-http-timeout"]="${{ inputs.webhook-github-http-timeout }}"
+        )
+
+        ARGS=""
+
+        for key in "${!INPUTS[@]}"; do
+          value="${INPUTS[$key]}"
+
+          if [ -n "$value" ]; then
+            ARGS="$ARGS --$key $value"
+          fi
+        done
+
+        echo "cli=$ARGS" >> $GITHUB_OUTPUT
+
+    - shell: bash
+      run: |
+        verzon ${{steps.args.outputs.cli}}
